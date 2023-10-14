@@ -1,10 +1,11 @@
 from bot.bot_connection import bot
-from bot.bot_messages import messages
+import bot.bot_messages as messages
 
-def start_polling():    
+print(bot)
+def start_polling():
     @bot.message_handler(commands=['start'])
     def start_message(message):
-        messages.commands(message, bot)
+        messages.start(message, bot)
     
     @bot.message_handler(content_types=['text'])
     def get_text_messages(message):
@@ -12,6 +13,6 @@ def start_polling():
     
     bot.infinity_polling()
 
-if __name__ == "__main__":   
+if __name__ == "__main__":
     start_polling()
 
