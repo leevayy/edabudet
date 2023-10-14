@@ -1,5 +1,5 @@
-from bot.botConnection import bot
-import messages
+from bot.bot_connection import bot
+from bot.bot_messages import messages
 
 def start_polling():    
     @bot.message_handler(commands=['start'])
