@@ -1,8 +1,9 @@
 from telebot import types
-
+from database.database_commands import add_user
 
 def start(message, bot):
     id = message.chat.id
+    add_user(id, message.chat.username)
     RepMarkup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     text = 'Добро пожаловать в меню Едабота.'
     btn1 = types.KeyboardButton('Найти рецепт')
