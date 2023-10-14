@@ -40,6 +40,7 @@ def reply(message, bot):
             # Здесь должно быть обращение к бд, но её ещё нет
             RepMarkup.add(ex, back)
             ans = 'Сделайте бд, плиз'
+            form_preview(message.chat.id, bot)
 
         case 'рецепт':
             btn1 = types.InlineKeyboardButton('Лайк', callback_data='liked')
@@ -60,4 +61,12 @@ def reply(message, bot):
             ans = 'С возвращением в меню Едабота'
 
     bot.send_message(message.chat.id, text=ans, reply_markup=RepMarkup, parse_mode='HTML')
+
+def form_preview(id, bot):
+    name = 'ы' # Вытянуть из бд
+    description = 'Я ебал, меня сосали' # Вытянуть из бд
+    parts = 'Доширак' # Вытянуть из бд
+    ans = f'<center><b>{name}</b></center>'
+    bot.send_message(id, text=ans)
+
 
