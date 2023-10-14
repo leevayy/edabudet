@@ -1,7 +1,7 @@
 from bot.bot_connection import bot
 import bot.bot_messages as messages
 
-print(bot)
+
 def start_polling():
     @bot.message_handler(commands=['start'])
     def start_message(message):
@@ -12,6 +12,7 @@ def start_polling():
         messages.reply(message, bot)
     
     bot.infinity_polling()
+
 
 if __name__ == "__main__":
     start_polling()
