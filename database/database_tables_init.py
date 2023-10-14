@@ -36,7 +36,7 @@ def create_tags():
 
 def create_recipe_tags():
     db_connection, db_cursor = open_connection()
-    db_cursor.execute("""CREATE TABLE IF NOT EXISTS recipes(
+    db_cursor.execute("""CREATE TABLE IF NOT EXISTS recipe_tags(
          recipe_id integer,
          tag_id integer
       )""")

@@ -67,7 +67,11 @@ def add_recipe_tags(recipe_id: int, tag_id: int):
 
 
 def add_recipe(author_user_id: int, name: str, description: str, tags: list[int]):
-    last_id = get_recipes()[-1][0]
+    last_id = 0
+    try:
+        last_id = get_recipes()[-1][0]
+    except IndexError:
+        print('This is the first Recipe!')
     
     db_connection, db_cursor = open_connection()
     db_cursor.execute("""INSERT INTO recipes(
