@@ -97,6 +97,6 @@ def callback(call):
                 except Exception as error:
                     print(error)
     elif call.data == 'like':
-        bot.answer_callback_query(callback_query_id=call.id, text='Спасибо за отзыв')
+        bot.answer_callback_query(callback_query_id=call.id, text='Вы лайкнули🥒')
     else:
-        bot.answer_callback_query(callback_query_id=call.id, text='Спасибо за отзыв')
+        bot.answer_callback_query(callback_query_id=call.id, text='Вам не понравилось🍅')
