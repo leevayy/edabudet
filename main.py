@@ -16,7 +16,7 @@ def start_polling():
 
     @bot.callback_query_handler(func=lambda call: True)
     def callback_query(call):
-        messages.callback(call)
+        callback(call)
         
     @bot.inline_handler(lambda query: len(query.query) > 0)
     def get_inline_request(request):

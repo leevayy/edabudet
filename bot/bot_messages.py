@@ -96,7 +96,8 @@ def callback(call):
             # bot.delete_message(call.message.chat.id, call.inline_message_id)
             # bot.edit_message_text(message_id=call.inline_message_id,chat_id=call.message.chat.id, text=f'<b>{recipe[2]}</b>\n\n{recipe[3]}', parse_mode='HTML')
             try:
-                bot.send_message(call.message.chat.id, f'<b>{recipe[2]}</b>\n\n{recipe[3]}', parse_mode='HTML')
+                bot.send_photo(call.message.chat.id, open(f'photos/{recipe[0]}.jpg', 'rb'), caption=f'<b>{recipe[2]}</b>\n\n{recipe[3]}', parse_mode='HTML')
+                # bot.send_message(call.message.chat.id, f'<b>{recipe[2]}</b>\n\n{recipe[3]}', parse_mode='HTML')
             except Exception as error:
                 print(error)
         

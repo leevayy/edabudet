@@ -1,5 +1,5 @@
 from database.database_connection import open_connection
-from database.database_tables_init import create_recipe_tags, create_recipes, create_tags, create_users
+from database.database_tables_init import create_recipe_tags, create_recipes, create_tags, create_users, create_user_tags
 from datetime import datetime
 
 def create_database():
@@ -7,6 +7,7 @@ def create_database():
     create_tags()
     create_recipes()
     create_recipe_tags()
+    create_user_tags()
     print('Database initialized')
 
 
@@ -16,6 +17,7 @@ def search(search_state, query):
             return list(filter(lambda recipe: query.lower() in recipe[2].lower(), get_recipes()))
         case 'tags':
             return list(filter(lambda tag: query.lower() in tag[2].lower(), get_all_tags()))
+    
 
 
 def add_user(id: int, username: str):
