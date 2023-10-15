@@ -72,7 +72,7 @@ def change_search_state(id, new_state):
 
 def get_all_tags():
     db_connection, db_cursor = open_connection()
-    tags = db_cursor.execute("SELECT * FROM tags").fetchall()
+    tags = db_cursor.execute("SELECT name FROM tags").fetchall()
     db_connection.close()
     return tags
 

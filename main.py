@@ -1,5 +1,6 @@
 from bot.bot_connection import bot
 from database.database_commands import create_database
+from inline import query_text
 import bot.bot_messages as messages
 from bot.bot_messages import callback
 
@@ -16,9 +17,15 @@ def start_polling():
     @bot.callback_query_handler(func=lambda call: True)
     def callback_query(call):
         messages.callback(call)
+        
+    @bot.inline_handler(lambda query: len(query.query) > 0)
+    def get_inline_request(request):
+        query_text(request)
+
 
     bot.infinity_polling()
 
 if __name__ == "__main__":
     create_database()
+
     start_polling()
