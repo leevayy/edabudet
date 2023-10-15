@@ -1,6 +1,6 @@
 from telebot import types
 from bot.bot_connection import bot
-from database.database_commands import add_user
+from database.database_commands import add_user, get_user, search, change_search_state
 
 class keynames:
     SEARCH = 'Поиск'
@@ -39,6 +39,7 @@ def reply(message):
             bot.send_message(message.chat.id, 'Главное меню', reply_markup=keyboard())
 
         case keynames.SEARCH:
+            change_search_state(message.chat.id, 'recipe')
             bot.send_message(message.chat.id, 'Введите запрос: ', reply_markup=keyboard({0: keynames.TO_MENU}))
 
         case keynames.RECOMMENDATIONS:
@@ -57,3 +58,23 @@ def reply(message):
                 1: keynames.BANNED_ADD,
                 2: keynames.FAVORITE_TAGS
             }))
+            
+        case _:
+            SEARCH_STATE_IS_NONE = "Search state is None"
+            DB_NOT_FOUND_MSG = "У нас нет такого"
+            try: 
+                search_state = get_user(message.chat.id)[2]
+                if search_state == None:
+                    raise Exception(SEARCH_STATE_IS_NONE)
+                
+                search_result = search(search_state, message.text)
+                if len(search_result) == 0:
+                    return bot.send_message(message.chat.id, DB_NOT_FOUND_MSG)
+                else:
+                    return bot.send_message(message.chat.id, str(search_result[0]))
+                
+            # except TypeError as error:
+            #     print(error)
+            except Exception as error:
+                if str(error) != SEARCH_STATE_IS_NONE: raise error
+

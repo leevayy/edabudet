@@ -1,11 +1,12 @@
 from database.database_connection import open_connection
 
-
+# search_state: 'None' | 'recipe' | 'tags' 
 def create_users():
     db_connection, db_cursor = open_connection()
     db_cursor.execute("""CREATE TABLE IF NOT EXISTS users(
          id integer [primary key],
          username text,
+         search_state text,
          created_at timestamp
       )""")
     db_connection.close()
