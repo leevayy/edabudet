@@ -18,7 +18,6 @@ def create_recipes():
          author_user_id integer,
          name text,
          description text,
-         ingredients text,
          like_count integer,
          created_at timestamp
       )""")

@@ -1,64 +1,59 @@
 from telebot import types
+from bot.bot_connection import bot
 from database.database_commands import add_user
 
-def start(message, bot):
+class keynames:
+    SEARCH = 'Поиск'
+    RECOMMENDATIONS = 'Гига-кнопка'
+    SETTINGS = 'Персонализация'
+    TO_MENU = 'Отмена'
+    BANNED = 'Бан-лист'
+    BANNED_ADD = 'Добавить' 
+    FAVORITE_TAGS = 'Топ тэгов'
+
+
+def keyboard(swap_keys = {}):   
+    search = types.KeyboardButton(keynames.SEARCH)
+    recommendations = types.KeyboardButton(keynames.RECOMMENDATIONS)
+    settings = types.KeyboardButton(keynames.SETTINGS)
+    
+    keyboard = [search, recommendations, settings]
+    for place in swap_keys:
+        keyboard[place] = swap_keys[place]
+        
+    return types.ReplyKeyboardMarkup(
+        resize_keyboard=True
+    ).add(keyboard[0], keyboard[1], keyboard[2])
+    
+def start(message):
     id = message.chat.id
     add_user(id, message.chat.username)
-    RepMarkup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    text = 'Добро пожаловать в меню Едабота.'
-    btn1 = types.KeyboardButton('Найти рецепт')
-    btn2 = types.KeyboardButton('Добавить рецепт')
-    RepMarkup.add(btn1, btn2)
-    bot.send_message(id, text=text, reply_markup=RepMarkup)
+    
+    text = 'Добро пожаловать в меню ЕдаБота.'
+    
+    bot.send_message(id, text=text, reply_markup=keyboard())
 
+def reply(message):    
+    match message.text:
+        case keynames.TO_MENU:
+            bot.send_message(message.chat.id, 'Главное меню', reply_markup=keyboard())
 
-def reply(message, bot):
-    user_ans = message.text
-    RepMarkup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    InlMarkup = types.InlineKeyboardMarkup()
-    ans = "incorrect input"
-    back = types.KeyboardButton('Назад к поиску')
-    ex = types.KeyboardButton('Выход в меню')
-    match user_ans:
-        # Блок с поиском рецептов
-        case 'Найти рецепт'| 'Назад к поиску':
-            btn1 = types.KeyboardButton('Поиск по названию')
-            btn2 = types.KeyboardButton('Поиск по тегам')
-            btn3 = types.KeyboardButton('Топ рецептов')
+        case keynames.SEARCH:
+            bot.send_message(message.chat.id, 'Введите запрос: ', reply_markup=keyboard({0: keynames.TO_MENU}))
 
-            RepMarkup.add(btn1, btn2, btn3, ex)
-            ans = 'Как будете искать?'
+        case keynames.RECOMMENDATIONS:
+            bot.send_message(message.chat.id, 'Вот что мы нашли для вас:')
 
-        case 'Поиск по названию':
-            RepMarkup.add(ex, back)
-            ans = 'Пожалуйста, введите название блюда'
+        case keynames.SETTINGS:
+            bot.send_message(message.chat.id, 'Настройки', reply_markup=keyboard({
+                0: keynames.TO_MENU,
+                1: keynames.BANNED,
+                2: keynames.FAVORITE_TAGS
+            }))
 
-        case 'Поиск по тегам':
-            RepMarkup.add(ex, back)
-            ans = 'Пожалуйста, введите теги через запятую'
-
-        case 'Топ рецептов':
-            # Здесь должно быть обращение к бд, но её ещё нет
-            RepMarkup.add(ex, back)
-            ans = 'Сделайте бд, плиз'
-
-        case 'рецепт':
-            btn1 = types.InlineKeyboardButton('Лайк', callback_data='liked')
-            btn2 = types.InlineKeyboardButton('ДизЛайк', callback_data='disliked')
-            InlMarkup.add(btn1, btn2)
-            ans = '<b>Самое вкусное нихуя</b>'
-
-        # Блок с созданием рецептов
-        case 'Добавить рецепт':
-            RepMarkup.add(ex)
-            ans = 'Сделайте хз что, чтобы добавить рецепт в бд бота'
-
-        # Блок обработчик возвратов
-        case 'Выход в меню':
-            btn1 = types.KeyboardButton('Найти рецепт')
-            btn2 = types.KeyboardButton('Добавить рецепт')
-            RepMarkup.add(btn1, btn2)
-            ans = 'С возвращением в меню Едабота'
-
-    bot.send_message(message.chat.id, text=ans, reply_markup=RepMarkup, parse_mode='HTML')
-
+        case keynames.BANNED:
+            bot.send_message(message.chat.id, 'Бан-лист', reply_markup=keyboard({
+                0: keynames.TO_MENU,
+                1: keynames.BANNED_ADD,
+                2: keynames.FAVORITE_TAGS
+            }))
