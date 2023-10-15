@@ -46,7 +46,11 @@ def reply(message):
             res = random.choice(get_recipes())
             name = res[2]
             description = res[3]
-            bot.send_message(message.chat.id, f'<b>{name}</b>\n\n{description}', parse_mode='HTML')
+            markup = types.InlineKeyboardMarkup()
+            li = types.InlineKeyboardButton('👍', callback_data='like')
+            dis = types.InlineKeyboardButton('👎', callback_data='dislike')
+            markup.add(li, dis)
+            bot.send_photo(message.chat.id, open(f'photos/{res[0]}.jpg', 'rb'), caption=f'<b>{name}</b>\n\n{description}', parse_mode='HTML', reply_markup=markup)
             
         case _:
             SEARCH_STATE_IS_NONE = "Search state is None"
@@ -80,14 +84,21 @@ def send_search_card(user_id, query, search_results):
 
 
 def callback(call):
-    print(call.data)
-    for recipe in get_recipes():
-        if int(recipe[0]) == int(call.data):
-            # bot.delete_message(call.message.chat.id, call.inline_message_id)
-            # bot.edit_message_text(message_id=call.inline_message_id,chat_id=call.message.chat.id, text=f'<b>{recipe[2]}</b>\n\n{recipe[3]}', parse_mode='HTML')
-            try:
-                bot.send_photo(call.message.chat.id, open(f'photos/{recipe[0]}.jpg', 'rb'), caption=f'<b>{recipe[2]}</b>\n\n{recipe[3]}', parse_mode='HTML')
-                # bot.send_message(call.message.chat.id, f'<b>{recipe[2]}</b>\n\n{recipe[3]}', parse_mode='HTML')
-            except Exception as error:
-                print(error)
-        
+    if call.data not in ('like', 'dislike'):
+        for recipe in get_recipes():
+            if int(recipe[0]) == int(call.data):
+                markup = types.InlineKeyboardMarkup()
+                li = types.InlineKeyboardButton('👍', callback_data='like')
+                dis = types.InlineKeyboardButton('👎', callback_data='dislike')
+                markup.add(li, dis)
+                # bot.delete_message(call.message.chat.id, call.inline_message_id)
+                # bot.edit_message_text(message_id=call.inline_message_id,chat_id=call.message.chat.id, text=f'<b>{recipe[2]}</b>\n\n{recipe[3]}', parse_mode='HTML')
+                try:
+                    bot.send_photo(call.message.chat.id, open(f'photos/{recipe[0]}.jpg', 'rb'), caption=f'<b>{recipe[2]}</b>\n\n{recipe[3]}', parse_mode='HTML', reply_markup=markup)
+                    # bot.send_message(call.message.chat.id, f'<b>{recipe[2]}</b>\n\n{recipe[3]}', parse_mode='HTML')
+                except Exception as error:
+                    print(error)
+    elif call.data == 'like':
+        bot.answer_callback_query(callback_query_id=call.id, text='Спасибо за отзыв')
+    else:
+        bot.answer_callback_query(callback_query_id=call.id, text='Спасибо за отзыв')
