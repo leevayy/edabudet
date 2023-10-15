@@ -1,6 +1,7 @@
 from bot.bot_connection import bot
 from database.database_commands import create_database
 import bot.bot_messages as messages
+from bot.bot_messages import callback
 
 
 def start_polling():
@@ -14,10 +15,7 @@ def start_polling():
 
     @bot.callback_query_handler(func=lambda call: True)
     def callback_query(call):
-        if call.data == "cb_yes":
-            bot.answer_callback_query(call.id, "Answer is Yes")
-        elif call.data == "cb_no":
-            bot.answer_callback_query(call.id, "Answer is No")
+        messages.callback(call)
 
     bot.infinity_polling()
 

@@ -1,6 +1,6 @@
 from telebot import types
 from bot.bot_connection import bot
-from database.database_commands import add_user, get_user, search, change_search_state
+from database.database_commands import add_user, get_user, search, change_search_state, get_recipes
 
 class keynames:
     SEARCH = 'Поиск'
@@ -81,10 +81,22 @@ def send_search_card(user_id, query, search_results):
     markup = types.InlineKeyboardMarkup()
     for i in range(min(len(search_results), 10)):
         result = search_results[i]
-        markup.add(types.InlineKeyboardButton(result[2], callback_data='hello'))
+        markup.add(types.InlineKeyboardButton(result[2], callback_data=result[0]))
     # markup.add(types.InlineKeyboardButton('<-', callback_data='<-'),
     #             types.InlineKeyboardButton('0', callback_data='0'),
     #             types.InlineKeyboardButton('->', callback_data='->'),
     #             row_width=3)
 
     bot.send_message(user_id, f'Вот что мы нашли по запросу: {query}',reply_markup=markup)
+    
+def callback(call):
+    print(call.data)
+    for recipe in get_recipes():
+        if int(recipe[0]) == int(call.data):
+            # bot.delete_message(call.message.chat.id, call.inline_message_id)
+            # bot.edit_message_text(message_id=call.inline_message_id,chat_id=call.message.chat.id, text=f'<b>{recipe[2]}</b>\n\n{recipe[3]}', parse_mode='HTML')
+            try:
+                bot.send_message(call.message.chat.id, f'<b>{recipe[2]}</b>\n\n{recipe[3]}', parse_mode='HTML')
+            except Exception as error:
+                print(error)
+        

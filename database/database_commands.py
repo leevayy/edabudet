@@ -13,9 +13,9 @@ def create_database():
 def search(search_state, query):
     match search_state:
         case 'recipe':
-            return list(filter(lambda recipe: query in recipe[2], get_recipes()))
+            return list(filter(lambda recipe: query.lower() in recipe[2].lower(), get_recipes()))
         case 'tags':
-            return list(filter(lambda tag: query in tag[2], get_all_tags()))
+            return list(filter(lambda tag: query.lower() in tag[2].lower(), get_all_tags()))
 
 
 def add_user(id: int, username: str):
