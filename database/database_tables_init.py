@@ -32,6 +32,15 @@ def create_tags():
          name text
       )""")
     db_connection.close()
+    
+def create_user_tags():
+    db_connection, db_cursor = open_connection()
+    db_cursor.execute("""CREATE TABLE IF NOT EXISTS tags(
+         user_id integer [primary key],
+         tags_id integer
+         interest integer
+      )""")
+    db_connection.close()
 
 
 def create_recipe_tags():
