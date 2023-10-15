@@ -39,10 +39,15 @@ def get_users():
     db_connection.close()
     return users
 
+def get_user(id):
+    db_connection, db_cursor = open_connection()
+    user = db_cursor.execute(f"SELECT * FROM users WHERE id = {id}").fetchall()
+    db_connection.close()
+    return user
 
 def get_all_tags():
     db_connection, db_cursor = open_connection()
-    tags = db_cursor.execute("SELECT * FROM tags").fetchall()
+    tags = db_cursor.execute("SELECT name FROM tags").fetchall()
     db_connection.close()
     return tags
 
