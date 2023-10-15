@@ -43,10 +43,8 @@ def reply(message):
 
         case keynames.RECOMMENDATIONS:
             bot.send_message(message.chat.id, 'Вот что мы нашли для вас:')
-            res = random.choice(get_recipes())
-            name = res[2]
-            description = res[3]
-            bot.send_message(message.chat.id, f'<b>{name}</b>\n\n{description}', parse_mode='HTML')
+            recipe = random.choice(get_recipes())
+            bot.send_photo(message.chat.id, open(f'photos/{recipe[0]}.jpg', 'rb'), caption=f'<b>{recipe[2]}</b>\n\n{recipe[3]}', parse_mode='HTML')
             
         case _:
             SEARCH_STATE_IS_NONE = "Search state is None"
