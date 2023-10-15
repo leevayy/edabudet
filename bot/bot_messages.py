@@ -1,6 +1,7 @@
 from telebot import types
 from bot.bot_connection import bot
 from database.database_commands import add_user, get_user, search, change_search_state, get_recipes
+import random
 
 class keynames:
     SEARCH = 'Поиск'
@@ -42,6 +43,10 @@ def reply(message):
 
         case keynames.RECOMMENDATIONS:
             bot.send_message(message.chat.id, 'Вот что мы нашли для вас:')
+            res = random.choice(get_recipes())
+            name = res[2]
+            description = res[3]
+            bot.send_message(message.chat.id, f'<b>{name}</b>\n\n{description}', parse_mode='HTML')
             
         case _:
             SEARCH_STATE_IS_NONE = "Search state is None"
