@@ -5,26 +5,22 @@ from database.database_commands import add_user, get_user, search, change_search
 class keynames:
     SEARCH = 'Поиск'
     RECOMMENDATIONS = 'Гига-кнопка'
-    SETTINGS = 'Персонализация'
     TO_MENU = 'Отмена'
-    BANNED = 'Бан-лист'
-    BANNED_ADD = 'Добавить' 
-    FAVORITE_TAGS = 'Топ тэгов'
 
 
 def keyboard(swap_keys = {}):   
     search = types.KeyboardButton(keynames.SEARCH)
     recommendations = types.KeyboardButton(keynames.RECOMMENDATIONS)
-    settings = types.KeyboardButton(keynames.SETTINGS)
     
-    keyboard = [search, recommendations, settings]
+    keyboard = [search, recommendations]
     for place in swap_keys:
         keyboard[place] = swap_keys[place]
         
     return types.ReplyKeyboardMarkup(
         resize_keyboard=True
-    ).add(keyboard[0], keyboard[1], keyboard[2])
-    
+    ).add(keyboard[0], keyboard[1])
+
+
 def start(message):
     id = message.chat.id
     add_user(id, message.chat.username)
@@ -32,6 +28,7 @@ def start(message):
     text = 'Добро пожаловать в меню ЕдаБота.'
     
     bot.send_message(id, text=text, reply_markup=keyboard())
+
 
 def reply(message):    
     match message.text:
@@ -45,20 +42,6 @@ def reply(message):
 
         case keynames.RECOMMENDATIONS:
             bot.send_message(message.chat.id, 'Вот что мы нашли для вас:')
-
-        case keynames.SETTINGS:
-            bot.send_message(message.chat.id, 'Настройки', reply_markup=keyboard({
-                0: keynames.TO_MENU,
-                1: keynames.BANNED,
-                2: keynames.FAVORITE_TAGS
-            }))
-
-        case keynames.BANNED:
-            bot.send_message(message.chat.id, 'Бан-лист', reply_markup=keyboard({
-                0: keynames.TO_MENU,
-                1: keynames.BANNED_ADD,
-                2: keynames.FAVORITE_TAGS
-            }))
             
         case _:
             SEARCH_STATE_IS_NONE = "Search state is None"
@@ -77,6 +60,7 @@ def reply(message):
             except Exception as error:
                 if str(error) != SEARCH_STATE_IS_NONE: raise error
 
+
 def send_search_card(user_id, query, search_results):
     markup = types.InlineKeyboardMarkup()
     for i in range(min(len(search_results), 10)):
@@ -88,7 +72,8 @@ def send_search_card(user_id, query, search_results):
     #             row_width=3)
 
     bot.send_message(user_id, f'Вот что мы нашли по запросу: {query}',reply_markup=markup)
-    
+
+
 def callback(call):
     print(call.data)
     for recipe in get_recipes():
