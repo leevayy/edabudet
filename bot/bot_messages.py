@@ -36,6 +36,7 @@ def start(message):
 def reply(message):    
     match message.text:
         case keynames.TO_MENU:
+            change_search_state(message.chat.id, 'None')
             bot.send_message(message.chat.id, 'Главное меню', reply_markup=keyboard())
 
         case keynames.SEARCH:
@@ -67,14 +68,23 @@ def reply(message):
                 if search_state == None:
                     raise Exception(SEARCH_STATE_IS_NONE)
                 
-                search_result = search(search_state, message.text)
-                if len(search_result) == 0:
+                search_results = search(search_state, message.text)
+                if len(search_results) == 0:
                     return bot.send_message(message.chat.id, DB_NOT_FOUND_MSG)
                 else:
-                    return bot.send_message(message.chat.id, str(search_result[0]))
+                    send_search_card(message.chat.id, message.text, search_results)
                 
-            # except TypeError as error:
-            #     print(error)
             except Exception as error:
                 if str(error) != SEARCH_STATE_IS_NONE: raise error
 
+def send_search_card(user_id, query, search_results):
+    markup = types.InlineKeyboardMarkup()
+    for i in range(min(len(search_results), 10)):
+        result = search_results[i]
+        markup.add(types.InlineKeyboardButton(result[2], callback_data='hello'))
+    # markup.add(types.InlineKeyboardButton('<-', callback_data='<-'),
+    #             types.InlineKeyboardButton('0', callback_data='0'),
+    #             types.InlineKeyboardButton('->', callback_data='->'),
+    #             row_width=3)
+
+    bot.send_message(user_id, f'Вот что мы нашли по запросу: {query}',reply_markup=markup)

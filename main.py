@@ -12,6 +12,13 @@ def start_polling():
     def handle_text_messages(message):
         messages.reply(message)
 
+    @bot.callback_query_handler(func=lambda call: True)
+    def callback_query(call):
+        if call.data == "cb_yes":
+            bot.answer_callback_query(call.id, "Answer is Yes")
+        elif call.data == "cb_no":
+            bot.answer_callback_query(call.id, "Answer is No")
+
     bot.infinity_polling()
 
 if __name__ == "__main__":

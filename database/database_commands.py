@@ -10,6 +10,14 @@ def create_database():
     print('Database initialized')
 
 
+def search(search_state, query):
+    match search_state:
+        case 'recipe':
+            return list(filter(lambda recipe: query in recipe[2], get_recipes()))
+        case 'tags':
+            return list(filter(lambda tag: query in tag[2], get_all_tags()))
+
+
 def add_user(id: int, username: str):
     db_connection, db_cursor = open_connection()
     try:
@@ -23,10 +31,12 @@ def add_user(id: int, username: str):
     db_cursor.execute("""INSERT INTO users(
             id,
             username,
+            search_state,
             created_at
-        ) VALUES(?,?,?)""", [
+        ) VALUES(?,?,?,?)""", [
             id,
             username,
+            'None',
             datetime.now()
     ])
     db_connection.commit()
@@ -39,6 +49,26 @@ def get_users():
     db_connection.close()
     return users
 
+def get_user(id):
+    users = get_users()
+    for user in users:
+        if user[0] == id:
+            return user
+    return None
+
+
+def change_search_state(id, new_state):
+    user = get_user(id)
+    if user == None:
+        return
+    user = list(user)
+    
+    db_connection, db_cursor = open_connection()
+    user[2] = new_state
+    db_cursor.execute("""UPDATE users SET search_state=? WHERE id=?""", [new_state, id])
+    db_connection.commit()
+    db_connection.close()        
+    
 
 def get_all_tags():
     db_connection, db_cursor = open_connection()
@@ -52,6 +82,7 @@ def get_recipes():
     recipes = db_cursor.execute("SELECT * FROM recipes").fetchall()
     db_connection.close()
     return recipes
+
 
 def add_recipe_tags(recipe_id: int, tag_id: int):
     db_connection, db_cursor = open_connection()
