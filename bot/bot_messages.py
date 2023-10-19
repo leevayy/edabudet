@@ -93,8 +93,8 @@ def callback(call):
     elif call.data[0] == '+':
         bot.answer_callback_query(callback_query_id=call.id, text='Вы лайкнули🥒')
         for tag_id in get_recipe_tags(int(call.data[1:])):
-            set_user_interest(call.message, tag_id, +1)
+            set_user_interest(call.message.chat.id, tag_id, +1)
     else:
         bot.answer_callback_query(callback_query_id=call.id, text='Вам не понравилось🍅')
         for tag_id in get_recipe_tags(int(call.data[1:])):
-            set_user_interest(call.message, tag_id, -1)
+            set_user_interest(call.message.chat.id, tag_id, -1)

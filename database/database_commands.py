@@ -18,22 +18,41 @@ def get_user_tags():
     return user_tags
 
 def get_user_interest(user_id, tag_id):
-    user_tags = get_user_tags()
-    for user_tag in user_tags:
-        if user_tag[0] == user_id and user_tag[1] == tag_id:
-            return user_tag[2]
+    db_connection, db_cursor = open_connection()
+    interest = db_cursor.execute("""SELECT * FROM user_tags
+            WHERE user_id=? AND tag_id=?""", [
+                user_id, tag_id
+        ]).fetchone()[2]
+    db_connection.close()
+    return interest
         
-
-def set_user_interest(user_id, tag_id, diff):
-    prev_intrest = get_user_interest(user_id, tag_id)
-    new_intrest = prev_intrest + diff if prev_intrest != None else prev_intrest - diff
+def add_user_interest(user_id, tag_id):
+    INITIAL_INTEREST_VALUE = 0
     
     db_connection, db_cursor = open_connection()
-    db_cursor.execute("""UPDATE user_tags(
-            user_id integer [primary key],
-            tags_id integer
-            interest integer
-        ) SET interest=? WHERE user_id=? AND tags_id=?""", [
+    db_cursor.execute("""INSERT INTO user_tags(
+            user_id,
+            tag_id,
+            interest
+        ) VALUES(?,?,?)""", [
+            user_id, tag_id, INITIAL_INTEREST_VALUE
+        ])
+    db_connection.commit()
+    db_connection.close()
+    
+    return INITIAL_INTEREST_VALUE
+
+def set_user_interest(user_id, tag_id, diff):    
+    prev_intrest = get_user_interest(user_id, tag_id)
+    if prev_intrest == None:
+        prev_intrest = add_user_interest(user_id, tag_id)
+    
+    new_intrest = prev_intrest + diff
+    
+    db_connection, db_cursor = open_connection()
+    db_cursor.execute("""UPDATE user_tags
+        SET interest=? 
+        WHERE user_id=? AND tag_id=?""", [
             new_intrest, user_id, tag_id
         ])
     db_connection.commit()
@@ -118,7 +137,7 @@ def get_recipe_tags(recipe_id):
     tags = db_cursor.execute("""SELECT tag_id FROM recipe_tags WHERE recipe_id=?""", [recipe_id]).fetchall()
     db_connection.commit()
     db_connection.close()
-    return tags
+    return list(map(lambda tag_tuple: tag_tuple[0], tags))
 
 
 def add_recipe_tags(recipe_id: int, tag_id: int):
