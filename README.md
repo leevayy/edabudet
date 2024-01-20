@@ -1,5 +1,7 @@
 # Еда будет! 
 
+<img width="648" alt="image" src="https://github.com/leevayy/edabudet/assets/86363699/b984b852-7a87-4c98-a576-4150c1995370">
+
 Cсылка на бота: [@EdaBudetBot](https://t.me/EdaBudetBot)
 
 Проект с двухдневного хакатона Время IT. 
